@@ -253,10 +253,57 @@
         </div>
         <div class="container mx-auto px-6 py-20 min-h-screen">
             <div id="dynamic-content-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-            <div class="mt-20 pt-20 border-t border-white/5 flex justify-center">
-                <button id="admin-trigger"
-                    class="text-white/10 hover:text-white/50 text-[10px] tracking-widest uppercase transition-colors p-4">+
-                    Admin Access</button>
+            <div id="dynamic-content-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <!-- Admin button removed. Edit index.html directly to add projects. -->
+        </div>
+    </div>
+    </div>
+
+    <!-- READING OVERLAY (The Single Article View) -->
+    <div id="reading-overlay"
+        class="fixed inset-0 z-[350] bg-[#050505] opacity-0 pointer-events-none transition-opacity duration-500 overflow-hidden">
+
+        <!-- Navigation Controls -->
+        <button id="read-close"
+            class="fixed top-8 right-8 z-[360] magnetic bg-white/5 border border-white/10 backdrop-blur-md text-white/60 hover:text-white px-6 py-3 rounded-full uppercase text-xs tracking-widest transition-all hover:bg-white/10">Close</button>
+
+        <button id="read-prev"
+            class="fixed left-8 top-1/2 -translate-y-1/2 z-[360] text-white/20 hover:text-white transition-colors p-4 hover:scale-110">
+            <svg width="40" height="40" fill="none" class="rotate-180" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+        </button>
+        <button id="read-next"
+            class="fixed right-8 top-1/2 -translate-y-1/2 z-[360] text-white/20 hover:text-white transition-colors p-4 hover:scale-110">
+            <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+        </button>
+
+        <!-- Reading Content Container -->
+        <div id="reading-container" class="w-full h-full overflow-y-auto scroll-smooth">
+            <div class="max-w-4xl mx-auto pt-32 pb-40 px-6 md:px-12 relative">
+
+                <!-- Hero Image -->
+                <div id="read-image-container" class="w-full h-[50vh] mb-12 rounded-lg overflow-hidden relative hidden">
+                    <img id="read-image" src="" alt="Cover" class="w-full h-full object-cover opacity-80" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent"></div>
+                </div>
+
+                <div class="flex items-center gap-4 mb-6">
+                    <span id="read-cat"
+                        class="text-xs font-bold tracking-[0.2em] text-motion-violet uppercase">Category</span>
+                    <div class="h-[1px] w-12 bg-white/20"></div>
+                    <span class="text-xs text-white/40 uppercase tracking-widest">By Aryan</span>
+                </div>
+
+                <h1 id="read-title" class="text-4xl md:text-6xl font-display font-bold text-white mb-12 leading-tight">
+                    Title Here</h1>
+
+                <div id="read-content"
+                    class="prose prose-invert prose-lg max-w-none text-white/70 font-light leading-loose">
+                    <!-- Dynamic Content -->
+                </div>
             </div>
         </div>
     </div>
@@ -268,8 +315,16 @@
             <h3 class="text-xl mb-4 font-bold text-white">New Entry</h3>
             <input id="new-entry-title" type="text" placeholder="Title"
                 class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded focus:border-motion-violet outline-none transition-colors">
-            <textarea id="new-entry-desc" placeholder="Description..."
-                class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded h-32 focus:border-motion-violet outline-none transition-colors"></textarea>
+
+            <!-- NEW Image Input -->
+            <input id="new-entry-image" type="text" placeholder="Image URL (Make it look good!)"
+                class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded focus:border-motion-violet outline-none transition-colors text-sm font-mono text-cyan-400">
+
+            <textarea id="new-entry-desc" placeholder="Short Description..."
+                class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded h-24 focus:border-motion-violet outline-none transition-colors"></textarea>
+
+            <textarea id="new-entry-content" placeholder="Full Article Content (Markdwon/Text)..."
+                class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded h-48 focus:border-motion-violet outline-none transition-colors"></textarea>
             <div class="flex justify-between">
                 <button id="admin-cancel" class="text-gray-400 hover:text-white text-sm px-4">Cancel</button>
                 <button id="admin-save"
@@ -280,24 +335,82 @@
 
     <!-- LOGIC SCRIPTS -->
     <script>
-        // --- DATA STORE ---
+        // ==========================================================================================
+        //  CONTENT DATABASE (EDIT THIS TO ADD PROJECTS)
+        // ==========================================================================================
+        //  Instructions:
+        //  1. Copy one of the lines inside the brackets { ... },
+        //  2. Paste it below the others.
+        //  3. Change the title, desc, content, and image link.
+        // ==========================================================================================
         const DEFAULT_DATA = {
-            chronicles: [{ title: "Walking Paris", desc: "Notes from a midnight stroll along the Seine." }, { title: "Urban Rhythms", desc: "How cities breathe when we stop looking." }, { title: "Silent Observers", desc: "The art of watching without being seen." }],
-            oeuvre: [{ title: "Project Alpha", desc: "A study in motion and optics." }, { title: "Neon Dreams", desc: "Photography series: Tokyo at night." }],
-            'in-motion': [{ title: "Currently Reading", desc: "The Arcades Project by Walter Benjamin." }, { title: "Next Destination", desc: "Planning a trip to Kyoto." }]
+
+            // SECTION 1: CHRONICLES (Blogs)
+            chronicles: [
+                {
+                    title: "Walking Paris",
+                    desc: "Notes from a midnight stroll along the Seine.",
+                    content: "The city at night is a different beast entirely. Shadows elongate, and the silence of the streets speaks louder than the daytime cacophony. <br><br> Walking along the Seine, the water reflects not just the lights, but the history of a thousand years...",
+                    image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop"
+                },
+                {
+                    title: "Urban Rhythms",
+                    desc: "How cities breathe when we stop looking.",
+                    content: "Every city has a pulse. You just have to stand still long enough to feel it.",
+                    image: "https://images.unsplash.com/photo-1449824913929-79ae3ad23071?q=80&w=2070&auto=format&fit=crop"
+                },
+                {
+                    title: "Silent Observers",
+                    desc: "The art of watching without being seen.",
+                    content: "To be a flâneur is to be invisible. To see, but not be seen.",
+                    image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=2070&auto=format&fit=crop"
+                }
+            ],
+
+            // SECTION 2: OEUVRE (Projects)
+            oeuvre: [
+                {
+                    title: "Project Alpha",
+                    desc: "A study in motion and optics.",
+                    content: "An exploration of light refraction through digital mediums.",
+                    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+                },
+                {
+                    title: "Neon Dreams",
+                    desc: "Photography series: Tokyo at night.",
+                    content: "Tokyo never sleeps, it just changes color.",
+                    image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1988&auto=format&fit=crop"
+                }
+            ],
+
+            // SECTION 3: IN MOTION (Current Status)
+            'in-motion': [
+                {
+                    title: "Currently Reading",
+                    desc: "The Arcades Project by Walter Benjamin.",
+                    content: "Benjamin's magnum opus on the Paris of the 19th century.",
+                    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop"
+                },
+                {
+                    title: "Next Destination",
+                    desc: "Planning a trip to Kyoto.",
+                    content: "The old capital calls.",
+                    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop"
+                }
+            ]
         };
 
+        // --- DATA LOGIC ---
+        let currentData = []; // Cached list of current category items
+        let currentIndex = 0; // For navigation
+
         function loadData(category) {
-            const saved = localStorage.getItem(`flaneur_${category}`);
-            return saved ? JSON.parse(saved) : DEFAULT_DATA[category] || [];
+            // Priority: Always load from code (since you are editing HTML directly)
+            currentData = DEFAULT_DATA[category] || []; // Cache it
+            return currentData;
         }
 
-        function saveData(category, newItem) {
-            const current = loadData(category);
-            current.unshift(newItem);
-            localStorage.setItem(`flaneur_${category}`, JSON.stringify(current));
-            renderContent(category);
-        }
+        // Removed saveData/localStorage since we are using static HTML editing.
 
         // --- UI RENDERER ---
         const contentGrid = document.getElementById('dynamic-content-grid');
@@ -319,6 +432,9 @@
             items.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = `group relative glass-box p-10 rounded-xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden hover:bg-white/5`;
+                // Add click event to open READER
+                card.onclick = () => openReader(index);
+
                 card.innerHTML = `
                     <div class="absolute top-0 right-0 p-6 opacity-20 font-display text-5xl font-bold text-white/20">${index + 1 < 10 ? '0' + (index + 1) : index + 1}</div>
                     <h3 class="text-2xl font-bold mb-4 ${accents[category]} tracking-tight">${item.title}</h3>
@@ -329,6 +445,70 @@
                     </div>`;
                 contentGrid.appendChild(card);
             });
+        }
+
+        // --- READER LOGIC ---
+        const readerOverlay = document.getElementById('reading-overlay');
+        const readTitle = document.getElementById('read-title');
+        const readContent = document.getElementById('read-content');
+        const readCat = document.getElementById('read-cat');
+        const readImage = document.getElementById('read-image');
+        const readImageContainer = document.getElementById('read-image-container');
+
+        function openReader(index) {
+            currentIndex = index;
+            updateReaderUI();
+
+            readerOverlay.classList.remove('pointer-events-none', 'opacity-0');
+            // Animation entrance
+            if (typeof gsap !== 'undefined') {
+                gsap.fromTo('#reading-container', { y: 100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: "power2.out" });
+            }
+        }
+
+        function closeReader() {
+            readerOverlay.classList.add('pointer-events-none', 'opacity-0');
+        }
+
+        function updateReaderUI() {
+            const item = currentData[currentIndex];
+            if (!item) return;
+
+            readTitle.innerText = item.title;
+            // Use user content if provided, else dummy text
+            readContent.innerHTML = item.content || `(Content would go here for ${item.title}...) <br><br> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`;
+            readCat.innerText = currentCategory;
+
+            if (item.image) {
+                readImage.src = item.image;
+                readImageContainer.classList.remove('hidden');
+            } else {
+                readImageContainer.classList.add('hidden');
+            }
+        }
+
+        function nextArticle() {
+            if (currentIndex < currentData.length - 1) {
+                currentIndex++;
+                updateReaderUI();
+                // Subtly animate change
+                gsap.fromTo(readTitle, { x: 50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4 });
+            } else {
+                // Loop back or bounce? Let's loop
+                currentIndex = 0;
+                updateReaderUI();
+            }
+        }
+
+        function prevArticle() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateReaderUI();
+                gsap.fromTo(readTitle, { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.4 });
+            } else {
+                currentIndex = currentData.length - 1;
+                updateReaderUI();
+            }
         }
 
         // --- INTERACTION LOGIC ---
@@ -378,6 +558,19 @@
                     });
                 }
 
+                // READER CONTROLS
+                document.getElementById('read-close').addEventListener('click', closeReader);
+                document.getElementById('read-prev').addEventListener('click', prevArticle);
+                document.getElementById('read-next').addEventListener('click', nextArticle);
+
+                // Keyboard arrow support
+                document.addEventListener('keydown', (e) => {
+                    if (readerOverlay.classList.contains('opacity-0')) return; // Only if open
+                    if (e.key === "ArrowRight") nextArticle();
+                    if (e.key === "ArrowLeft") prevArticle();
+                    if (e.key === "Escape") closeReader();
+                });
+
                 // 3. Admin Logic (Simplified)
                 const adminTrigger = document.getElementById('admin-trigger');
                 const adminModal = document.getElementById('admin-modal');
@@ -385,6 +578,8 @@
                 const adminCancel = document.getElementById('admin-cancel');
                 const titleInput = document.getElementById('new-entry-title');
                 const descInput = document.getElementById('new-entry-desc');
+                const imageInput = document.getElementById('new-entry-image'); // NEW
+                const contentInput = document.getElementById('new-entry-content'); // NEW
 
                 if (adminTrigger) {
                     adminTrigger.addEventListener('click', () => {
@@ -401,13 +596,20 @@
                     if (adminModal) adminModal.classList.add('opacity-0', 'pointer-events-none');
                     if (titleInput) titleInput.value = '';
                     if (descInput) descInput.value = '';
+                    if (imageInput) imageInput.value = '';
+                    if (contentInput) contentInput.value = '';
                 };
 
                 if (adminCancel) adminCancel.addEventListener('click', closeAdmin);
                 if (adminSave) {
                     adminSave.addEventListener('click', () => {
-                        if (titleInput && titleInput.value && descInput && descInput.value) {
-                            saveData(currentCategory, { title: titleInput.value, desc: descInput.value });
+                        if (titleInput && titleInput.value) {
+                            saveData(currentCategory, {
+                                title: titleInput.value,
+                                desc: descInput.value || "No description",
+                                image: imageInput.value || "",
+                                content: contentInput.value || "Work in progress..."
+                            });
                             closeAdmin();
                         }
                     });
