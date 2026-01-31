@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#050505] text-white overflow-hidden">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flâneur | The Art of Wandering</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'motion-black': '#050505',
+                        'motion-violet': '#5b25d4',
+                        'motion-grey': '#e6e6e6',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'display': ['"Reddit Sans"', 'sans-serif'],
+                    },
+                    animation: {
+                        'logo-fade': 'logoFade 5s linear infinite',
+                    },
+                    keyframes: {
+                        logoFade: {
+                            '0%': { backgroundPosition: '200% center' },
+                            '100%': { backgroundPosition: '-200% center' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Global Styles -->
+    <style>
+        body {
+            background-color: #050505;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            cursor: none;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Logo Text: HIDDEN in DOM, we draw it on canvas for masking effects */
+        .logo-text {
+            color: transparent;
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+            /* Let clicks pass through if needed */
+        }
+
+        /* Dynamic Glass Backgrounds */
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .glass-panel {
+            background: linear-gradient(-45deg, rgba(20, 20, 20, 0.4), rgba(40, 40, 40, 0.4), rgba(91, 37, 212, 0.15), rgba(20, 20, 20, 0.4));
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-box {
+            background: linear-gradient(-45deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02), rgba(91, 37, 212, 0.05), rgba(255, 255, 255, 0.05));
+            background-size: 300% 300%;
+            animation: gradientMove 10s ease infinite;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Admin Editable Fields */
+        [contenteditable="true"] {
+            outline: none;
+            border-bottom: 1px dashed #555;
+        }
+
+        [contenteditable="true"]:focus {
+            border-bottom: 1px solid white;
+        }
+    </style>
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+</head>
+
+<body class="antialiased opacity-0 transition-opacity duration-1000 ease-out">
+
+    <!-- High-Tech Network Background (WebGL) -->
+    <canvas id="bg-canvas" class="fixed inset-0 z-0 pointer-events-none bg-[#050505]"></canvas>
+
+    <!-- Custom Cursor -->
+    <div id="cursor-dot"
+        class="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none mix-blend-difference z-[9999]">
+    </div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6 text-white mix-blend-difference pointer-events-none">
+        <div class="text-xl font-bold tracking-tighter uppercase cursor-none pointer-events-auto">Flâneur</div>
+        <div
+            class="hidden md:flex items-center justify-center gap-12 text-sm font-medium uppercase tracking-wide absolute left-1/2 transform -translate-x-1/2 pointer-events-auto">
+            <button id="btn-explore"
+                class="magnetic p-8 -m-8 hover:text-motion-violet transition-colors focus:outline-none">Explore</button>
+            <button id="btn-esprit"
+                class="magnetic p-8 -m-8 hover:text-motion-violet transition-colors focus:outline-none">L'Esprit</button>
+            <a href="https://github.com/anandaryan21-cell" target="_blank"
+                class="magnetic p-8 -m-8 hover:text-motion-violet transition-colors focus:outline-none">GitHub</a>
+            <a href="https://www.linkedin.com/in/aryan-anand-8739333a8/" target="_blank"
+                class="magnetic p-8 -m-8 hover:text-motion-violet transition-colors focus:outline-none">LinkedIn</a>
+        </div>
+        <button
+            class="magnetic pointer-events-auto px-10 py-4 -mr-4 border border-white/20 rounded-full text-xs uppercase hover:bg-white hover:text-black transition-all">Contact</button>
+    </nav>
+
+    <!-- MAIN SITE CONTENT -->
+    <main id="main-content" class="transition-opacity duration-500 h-screen w-screen relative pointer-events-none">
+        <!-- Hero Section -->
+        <section class="absolute inset-0 flex items-center justify-center px-6 z-10">
+            <!-- Logo Animation Canvas -->
+            <canvas id="logo-canvas" class="absolute inset-0 z-20 pointer-events-none w-full h-full"></canvas>
+
+            <!-- Text spans for measurement - VISUALLY HIDDEN via CSS color: transparent -->
+            <div class="text-center space-y-6 z-10 relative select-none logo-text">
+                <h1 class="font-bold tracking-tighter leading-none opacity-90" style="font-size: 10vw;">
+                    <span class="block">THE</span>
+                    <span class="block">FLÂNEUR</span>
+                </h1>
+                <p class="max-w-xl mx-auto text-white/50 text-lg md:text-xl font-light tracking-wide">Connoisseur of the
+                    street.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- EXPLORE MENU OVERLAY -->
+    <div id="menu-overlay"
+        class="fixed inset-0 z-[200] glass-panel flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-500">
+        <button id="menu-close"
+            class="magnetic absolute top-8 right-8 text-white/50 text-xs tracking-[0.2em] font-bold uppercase px-8 py-4 rounded-full transition-all duration-500 ease-out hover:text-white hover:bg-black hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:border-white/20 border border-transparent hover:scale-105 z-50">RETURN</button>
+        <canvas id="menu-fx-canvas" class="absolute inset-0 z-0 pointer-events-none w-full h-full"></canvas>
+        <div class="container mx-auto px-6 h-full flex flex-col justify-center items-center perspective-[2000px]">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 w-full max-w-6xl">
+                <div class="menu-item running-border group cursor-pointer relative h-[400px] w-full transition-all duration-500 transform-style-3d hover:translate-y-[-10px]"
+                    data-target="chronicles">
+                    <div
+                        class="absolute inset-0 bg-white/5 border border-white/10 backdrop-blur-sm transition-all duration-500 group-hover:bg-[#111] group-hover:border-white/40 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center rounded-sm">
+                        <div
+                            class="text-4xl md:text-5xl font-display font-bold text-white/80 group-hover:text-white transition-colors mb-4 tracking-tight">
+                            CHRONICLES</div>
+                        <div class="text-xs tracking-[0.2em] text-white/40 uppercase group-hover:text-white/60">Blogs &
+                            Musings</div>
+                        <div
+                            class="w-12 h-[1px] bg-white/20 mt-8 group-hover:w-24 group-hover:bg-white/50 transition-all duration-500">
+                        </div>
+                    </div>
+                </div>
+                <!-- ... other items ... -->
+                <div class="menu-item running-border group cursor-pointer relative h-[400px] w-full transition-all duration-500 transform-style-3d hover:translate-y-[-10px]"
+                    data-target="oeuvre">
+                    <div
+                        class="absolute inset-0 bg-white/5 border border-white/10 backdrop-blur-sm transition-all duration-500 group-hover:bg-[#111] group-hover:border-white/40 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center rounded-sm">
+                        <div
+                            class="text-4xl md:text-5xl font-display font-bold text-white/80 group-hover:text-white transition-colors mb-4 tracking-tight">
+                            OEUVRE</div>
+                        <div class="text-xs tracking-[0.2em] text-white/40 uppercase group-hover:text-white/60">Projects
+                            & Works</div>
+                        <div
+                            class="w-12 h-[1px] bg-white/20 mt-8 group-hover:w-24 group-hover:bg-white/50 transition-all duration-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-item running-border group cursor-pointer relative h-[400px] w-full transition-all duration-500 transform-style-3d hover:translate-y-[-10px]"
+                    data-target="in-motion">
+                    <div
+                        class="absolute inset-0 bg-white/5 border border-white/10 backdrop-blur-sm transition-all duration-500 group-hover:bg-[#111] group-hover:border-white/40 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)] flex flex-col items-center justify-center rounded-sm">
+                        <div
+                            class="text-4xl md:text-5xl font-display font-bold text-white/80 group-hover:text-white transition-colors mb-4 tracking-tight">
+                            IN MOTION</div>
+                        <div class="text-xs tracking-[0.2em] text-white/40 uppercase group-hover:text-white/60">Ongoing
+                            Journeys</div>
+                        <div
+                            class="w-12 h-[1px] bg-white/20 mt-8 group-hover:w-24 group-hover:bg-white/50 transition-all duration-500">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DEFINITION MODAL -->
+    <div id="esprit-modal"
+        class="fixed inset-0 z-[100] flex items-center justify-center px-4 pointer-events-none opacity-0">
+        <div id="modal-backdrop"
+            class="absolute inset-0 bg-black/40 backdrop-blur-2xl transition-opacity duration-300 pointer-events-auto cursor-pointer">
+        </div>
+        <div
+            class="relative bg-black/40 backdrop-blur-lg border border-motion-violet/60 p-10 md:p-14 rounded-3xl max-w-2xl w-full shadow-[0_0_50px_rgba(91,37,212,0.15)] transform scale-95 transition-all duration-300 pointer-events-auto">
+            <button id="modal-close"
+                class="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2">
+                <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h3 class="text-3xl font-display font-bold mb-8 text-white tracking-tight">L'Esprit du Flâneur</h3>
+            <p class="text-xl text-white/90 font-light leading-relaxed italic border-l-2 border-motion-violet pl-8">
+                "(French): While it traditionally means 'stroller,' in a modern context, it refers to a 'connoisseur of
+                the street'—someone who wanders through cities and cultures to observe and experience."
+            </p>
+        </div>
+    </div>
+
+    <!-- CONTENT VIEWER -->
+    <div id="content-viewer"
+        class="fixed inset-0 z-[300] bg-black/80 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-700 transform translate-y-[100%] overflow-y-auto">
+        <button id="content-close"
+            class="fixed top-8 right-8 z-[310] text-white/50 hover:text-white tracking-widest text-sm uppercase bg-black/40 border border-white/10 px-6 py-3 rounded-full backdrop-blur-md">Back
+            to EXPLORE</button>
+        <div class="relative h-[40vh] w-full flex items-end p-8 md:p-16 border-b border-white/5">
+            <div>
+                <h1 id="view-title" class="text-6xl md:text-8xl font-display font-bold text-white leading-none mb-2">
+                    TITLE</h1>
+                <p id="view-subtitle" class="text-xl tracking-[0.2em] uppercase text-white/40">Category</p>
+            </div>
+        </div>
+        <div class="container mx-auto px-6 py-20 min-h-screen">
+            <div id="dynamic-content-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+            <div class="mt-20 pt-20 border-t border-white/5 flex justify-center">
+                <button id="admin-trigger"
+                    class="text-white/10 hover:text-white/50 text-[10px] tracking-widest uppercase transition-colors p-4">+
+                    Admin Access</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN MODAL (Hidden in DOM structure, Logic handles it) -->
+    <div id="admin-modal"
+        class="fixed inset-0 z-[400] bg-black/90 flex items-center justify-center opacity-0 pointer-events-none backdrop-blur-sm">
+        <div class="glass-box p-8 rounded-xl w-full max-w-md">
+            <h3 class="text-xl mb-4 font-bold text-white">New Entry</h3>
+            <input id="new-entry-title" type="text" placeholder="Title"
+                class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded focus:border-motion-violet outline-none transition-colors">
+            <textarea id="new-entry-desc" placeholder="Description..."
+                class="w-full bg-white/5 border border-white/10 p-4 mb-4 text-white rounded h-32 focus:border-motion-violet outline-none transition-colors"></textarea>
+            <div class="flex justify-between">
+                <button id="admin-cancel" class="text-gray-400 hover:text-white text-sm px-4">Cancel</button>
+                <button id="admin-save"
+                    class="bg-motion-violet text-white px-8 py-3 rounded-lg hover:bg-violet-600 transition-colors shadow-lg shadow-violet-900/20">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIC SCRIPTS -->
+    <script>
+        // --- DATA STORE ---
+        const DEFAULT_DATA = {
+            chronicles: [{ title: "Walking Paris", desc: "Notes from a midnight stroll along the Seine." }, { title: "Urban Rhythms", desc: "How cities breathe when we stop looking." }, { title: "Silent Observers", desc: "The art of watching without being seen." }],
+            oeuvre: [{ title: "Project Alpha", desc: "A study in motion and optics." }, { title: "Neon Dreams", desc: "Photography series: Tokyo at night." }],
+            'in-motion': [{ title: "Currently Reading", desc: "The Arcades Project by Walter Benjamin." }, { title: "Next Destination", desc: "Planning a trip to Kyoto." }]
+        };
+
+        function loadData(category) {
+            const saved = localStorage.getItem(`flaneur_${category}`);
+            return saved ? JSON.parse(saved) : DEFAULT_DATA[category] || [];
+        }
+
+        function saveData(category, newItem) {
+            const current = loadData(category);
+            current.unshift(newItem);
+            localStorage.setItem(`flaneur_${category}`, JSON.stringify(current));
+            renderContent(category);
+        }
+
+        // --- UI RENDERER ---
+        const contentGrid = document.getElementById('dynamic-content-grid');
+        const viewTitle = document.getElementById('view-title');
+        const viewSubtitle = document.getElementById('view-subtitle');
+        let currentCategory = 'chronicles';
+
+        function renderContent(category) {
+            currentCategory = category;
+            const items = loadData(category);
+            const titles = { 'chronicles': 'CHRONICLES', 'oeuvre': 'OEUVRE', 'in-motion': 'IN MOTION' };
+            const subtitles = { 'chronicles': 'Blogs & Musings', 'oeuvre': 'Selected Projects', 'in-motion': 'Ongoing Works' };
+            const accents = { 'chronicles': 'text-motion-violet', 'oeuvre': 'text-cyan-400', 'in-motion': 'text-amber-400' };
+
+            viewTitle.innerText = titles[category];
+            viewSubtitle.innerText = subtitles[category];
+            contentGrid.innerHTML = '';
+
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = `group relative glass-box p-10 rounded-xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden hover:bg-white/5`;
+                card.innerHTML = `
+                    <div class="absolute top-0 right-0 p-6 opacity-20 font-display text-5xl font-bold text-white/20">${index + 1 < 10 ? '0' + (index + 1) : index + 1}</div>
+                    <h3 class="text-2xl font-bold mb-4 ${accents[category]} tracking-tight">${item.title}</h3>
+                    <p class="text-white/60 leading-relaxed font-light text-sm">${item.desc}</p>
+                    <div class="mt-8 pt-6 border-t border-white/5 flex justify-between items-center opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+                        <span class="text-[10px] uppercase tracking-widest text-white/40">Read Entry</span>
+                        <span class="text-lg text-white/50 group-hover:text-white transition-colors">→</span>
+                    </div>`;
+                contentGrid.appendChild(card);
+            });
+        }
+
+        // --- INTERACTION LOGIC ---
+        document.addEventListener('DOMContentLoaded', () => {
+
+            setTimeout(() => { document.body.classList.remove('opacity-0'); }, 1000);
+
+            try {
+                const btnExplore = document.getElementById('btn-explore');
+                const menuOverlay = document.getElementById('menu-overlay');
+                const menuClose = document.getElementById('menu-close');
+                const menuItems = document.querySelectorAll('.menu-item');
+
+                const openMenu = () => {
+                    menuOverlay.classList.remove('pointer-events-none', 'opacity-0');
+                    if (typeof gsap !== 'undefined') {
+                        gsap.fromTo(menuItems, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: "power2.out" });
+                    }
+                };
+                const closeMenu = () => { menuOverlay.classList.add('pointer-events-none', 'opacity-0'); };
+
+                if (btnExplore) btnExplore.addEventListener('click', openMenu);
+                if (menuClose) menuClose.addEventListener('click', closeMenu);
+
+                const contentViewer = document.getElementById('content-viewer');
+                const contentClose = document.getElementById('content-close');
+                if (contentClose) {
+                    contentClose.className = "magnetic fixed top-8 right-8 z-[310] text-white/50 text-xs tracking-[0.2em] font-bold uppercase px-8 py-4 rounded-full transition-all duration-500 ease-out hover:text-white hover:bg-black hover:shadow-[0_0_30px_rgba(255,255,255,0.1)] hover:border-white/20 border border-transparent hover:scale-105 bg-black/40 backdrop-blur-md";
+                    contentClose.addEventListener('click', () => {
+                        contentViewer.style.transform = 'translateY(100%)';
+                        contentViewer.style.opacity = '0';
+                        setTimeout(() => { contentViewer.classList.add('pointer-events-none'); }, 700);
+                    });
+                }
+
+                if (menuItems) {
+                    menuItems.forEach(item => {
+                        item.addEventListener('click', () => {
+                            const target = item.getAttribute('data-target');
+                            renderContent(target);
+                            if (contentViewer) {
+                                contentViewer.classList.remove('pointer-events-none');
+                                contentViewer.style.transform = 'translateY(0%)';
+                                contentViewer.style.opacity = '1';
+                            }
+                        });
+                    });
+                }
+
+                // 3. Admin Logic (Simplified)
+                const adminTrigger = document.getElementById('admin-trigger');
+                const adminModal = document.getElementById('admin-modal');
+                const adminSave = document.getElementById('admin-save');
+                const adminCancel = document.getElementById('admin-cancel');
+                const titleInput = document.getElementById('new-entry-title');
+                const descInput = document.getElementById('new-entry-desc');
+
+                if (adminTrigger) {
+                    adminTrigger.addEventListener('click', () => {
+                        const pass = prompt("Enter Access Code:");
+                        if (pass === "flaneur2026") {
+                            adminModal.classList.remove('opacity-0', 'pointer-events-none');
+                        } else if (pass) {
+                            alert("Access Denied");
+                        }
+                    });
+                }
+
+                const closeAdmin = () => {
+                    if (adminModal) adminModal.classList.add('opacity-0', 'pointer-events-none');
+                    if (titleInput) titleInput.value = '';
+                    if (descInput) descInput.value = '';
+                };
+
+                if (adminCancel) adminCancel.addEventListener('click', closeAdmin);
+                if (adminSave) {
+                    adminSave.addEventListener('click', () => {
+                        if (titleInput && titleInput.value && descInput && descInput.value) {
+                            saveData(currentCategory, { title: titleInput.value, desc: descInput.value });
+                            closeAdmin();
+                        }
+                    });
+                }
+
+            } catch (e) { console.error("Interaction Logic Panic:", e); }
+
+            try { initCursor(); } catch (e) { console.error("Cursor Init Failed", e); }
+            try { initBackground(); } catch (e) { console.error("Background Init Failed", e); }
+            try { initModal(); } catch (e) { console.error("Modal Init Failed", e); }
+            try { initLogoAnimation(); } catch (e) { console.error("Logo Init Failed", e); } // The heavy lifter
+            try { initNeonFx(); } catch (e) { console.error("Neon FX Init Failed", e); }
+
+            document.body.classList.remove('opacity-0');
+        });
+
+        // --- OPTIMIZED LOGO ANIMATION (NO LAG + VISIBLE TEXT) ---
+        function initLogoAnimation() {
+            const canvas = document.getElementById('logo-canvas');
+            const logoContainer = document.querySelector('.logo-text');
+            if (!canvas || !logoContainer) return;
+
+            const ctx = canvas.getContext('2d');
+            let width, height;
+
+            // We will render text to offscreen canvas
+            const textCanvas = document.createElement('canvas');
+            const textCtx = textCanvas.getContext('2d');
+            const textSpans = logoContainer.querySelectorAll('span');
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                // Optimization: Use dpr=1 if user complains of lag, 2 max
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
+                ctx.scale(dpr, dpr);
+
+                textCanvas.width = width * dpr;
+                textCanvas.height = height * dpr;
+                textCtx.scale(dpr, dpr);
+
+                // Pre-Render Text
+                textCtx.clearRect(0, 0, width, height);
+                // Draw Base Text Color (Hyper-Chrome Gradient)
+                // We utilize a diagonal gradient to simulate light hitting a metallic surface
+                const gradient = textCtx.createLinearGradient(0, 0, width, height);
+                // Deep Metal (Darker start for "faded corner" look)
+                gradient.addColorStop(0.0, '#101010');
+                gradient.addColorStop(0.2, '#555555');
+                // Sharp Center Shine
+                gradient.addColorStop(0.45, '#222222');
+                gradient.addColorStop(0.5, '#ffffff');
+                gradient.addColorStop(0.55, '#222222');
+                // Sky Reflection (Subtle violet-blue tint for brand consistency)
+                gradient.addColorStop(0.8, '#d0d0ff');
+                // Bottom Metal (Darker end)
+                gradient.addColorStop(1.0, '#1a1a1a');
+
+                textCtx.fillStyle = gradient;
+
+                // Shadow for depth
+                textCtx.shadowColor = "rgba(255, 255, 255, 0.3)";
+                textCtx.shadowBlur = 15;
+
+                textCtx.textAlign = "center";
+                textCtx.textBaseline = "middle";
+
+                textCtx.textBaseline = "middle";
+
+                // CRITICAL FIX: Get style from the H1, not the container DIV
+                const computedStyle = window.getComputedStyle(logoContainer.querySelector('h1'));
+                textCtx.font = `${computedStyle.fontWeight} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+
+                textSpans.forEach(span => {
+                    const rect = span.getBoundingClientRect();
+                    const x = rect.left + rect.width / 2;
+                    const y = rect.top + rect.height / 2;
+                    // Ensure text is drawn
+                    textCtx.fillText(span.innerText, x, y + (parseFloat(computedStyle.fontSize) * 0.05));
+                });
+
+                // Reset shadow
+                textCtx.shadowBlur = 0;
+
+                // "Colour Fading at Corner" - Vignette overlay on text
+                textCtx.globalCompositeOperation = "source-atop";
+                const vignette = textCtx.createRadialGradient(width / 2, height / 2, width * 0.1, width / 2, height / 2, width * 0.6);
+                vignette.addColorStop(0, 'rgba(0,0,0,0)'); // Center transparent
+                vignette.addColorStop(1, 'rgba(20, 10, 40, 0.7)'); // Edges fade to deep violet-black
+                textCtx.fillStyle = vignette;
+                textCtx.fillRect(0, 0, width, height);
+
+                // Restore default
+                textCtx.globalCompositeOperation = "source-over";
+            }
+
+            // Wait for fonts to load before first resize/render
+            document.fonts.ready.then(() => {
+                resize();
+            });
+
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(resize, 100);
+            });
+
+            class Particle {
+                constructor() {
+                    this.reset();
+                    // Spread history slightly to avoid "popping"
+                    this.angle = Math.random() * Math.PI * 2;
+                }
+                reset() {
+                    this.angle = Math.random() * Math.PI * 2;
+                    // Responsive Ellipse (Fixed for 10vw text with space at sides)
+                    this.radiusX = width * 0.4 + Math.random() * (width * 0.05);
+                    this.radiusY = height * 0.25 + Math.random() * (height * 0.05);
+
+                    this.speed = 0.002 + Math.random() * 0.004;
+                    this.size = 0.5 + Math.random() * 1.0;
+
+                    const colors = ['#ffffff', '#e6e6e6', '#c0c0c0', '#a9a9a9', '#f0f0f0'];
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+
+                    this.history = [];
+                    this.maxLength = 40; // Long tail
+                }
+                update() {
+                    this.angle += this.speed;
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+
+                    const x = centerX + Math.cos(this.angle) * this.radiusX;
+                    const y = centerY + Math.sin(this.angle) * this.radiusY;
+
+                    const wobble = Math.sin(Date.now() * 0.002 + this.angle * 3) * 3;
+                    this.x = x + wobble;
+                    this.y = y + wobble;
+
+                    this.history.push({ x: this.x, y: this.y });
+                    if (this.history.length > this.maxLength) this.history.shift();
+                }
+                draw() {
+                    if (this.history.length < 2) return;
+                    for (let i = 0; i < this.history.length - 1; i++) {
+                        const p1 = this.history[i];
+                        const p2 = this.history[i + 1];
+                        const progress = i / (this.history.length - 1);
+
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = this.color;
+                        ctx.lineWidth = this.size * progress;
+                        ctx.globalAlpha = progress;
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1;
+                }
+            }
+
+            const particleCount = 60;
+            const particles = [];
+            for (let i = 0; i < particleCount; i++) particles.push(new Particle());
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+
+                // 1. Draw Text (Visible Base)
+                ctx.drawImage(textCanvas, 0, 0, width, height); /* The visible gray text */
+
+                // 2. Draw Particles ON TOP of Text but ONLY where Text is (Composite)
+                // Actually 'source-atop' keeps NEW content (particles) only where OLD content (text) exists.
+                // And it draws ON TOP of the text.
+                // This makes the text "shine" with the particles. Perfect.
+                ctx.globalCompositeOperation = 'source-atop';
+
+                particles.forEach(p => { p.update(); p.draw(); });
+
+                ctx.globalCompositeOperation = 'source-over';
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // --- 6. Background & Cursor Functions ---
+        function initCursor() {
+            const cursor = document.getElementById('cursor-dot');
+            if (typeof gsap === 'undefined') return;
+            const xSet = gsap.quickSetter(cursor, "x", "px");
+            const ySet = gsap.quickSetter(cursor, "y", "px");
+            gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+            window.addEventListener("mousemove", e => { xSet(e.clientX); ySet(e.clientY); });
+            const magnetics = document.querySelectorAll('.magnetic');
+            magnetics.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    gsap.to(el, { x: (e.clientX - rect.left - rect.width / 2) * 0.3, y: (e.clientY - rect.top - rect.height / 2) * 0.3, duration: 0.3 });
+                });
+                el.addEventListener('mouseleave', () => { gsap.to(el, { x: 0, y: 0, duration: 0.5 }); });
+            });
+        }
+
+        function initModal() {
+            const btn = document.getElementById('btn-esprit');
+            const modal = document.getElementById('esprit-modal');
+            const closeBtn = document.getElementById('modal-close');
+            const backdrop = document.getElementById('modal-backdrop');
+            if (!btn || !modal) return;
+
+            const openModal = () => {
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(modal, { autoAlpha: 1, duration: 0.3 });
+                    gsap.fromTo(modal.querySelector('div.relative'), { scale: 0.95, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3 });
+                }
+            };
+            const closeModal = () => { if (typeof gsap !== 'undefined') gsap.to(modal, { autoAlpha: 0, duration: 0.3 }); };
+            btn.addEventListener('click', (e) => { e.preventDefault(); openModal(); });
+            closeBtn.addEventListener('click', closeModal);
+            backdrop.addEventListener('click', closeModal);
+        }
+
+        function initBackground() {
+            if (typeof THREE === 'undefined') return;
+            const canvas = document.getElementById('bg-canvas');
+            if (!canvas) return;
+
+            // OPTIMIZATION: Disabling antialias and alpha for background performance
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: false });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            // Limit pixel ratio to 1 for performance
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+
+            const scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x050505, 0.002);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 40;
+
+            // Reduced particle count heavily for responsiveness
+            const particlesCount = 400;
+            const particlesGeometry = new THREE.BufferGeometry();
+            const posArray = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i += 3) {
+                const r = 25 + Math.random() * 5;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+                posArray[i] = r * Math.sin(phi) * Math.cos(theta);
+                posArray[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+                posArray[i + 2] = r * Math.cos(phi);
+            }
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({ size: 0.15, color: 0x5b25d4, transparent: true, opacity: 0.8 });
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            // Removed O(N^2) Line segments completely for "lag free" experience.
+            // Just particles floating is sufficient and 10x faster.
+
+            let mouseX = 0; let mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                // Throttle maybe? No, simple math is fast.
+                mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            });
+
+            const clock = new THREE.Clock();
+            function animate() {
+                const elapsedTime = clock.getElapsedTime();
+                const baseRot = elapsedTime * 0.05;
+
+                particlesMesh.rotation.y = baseRot + (mouseX * 0.2);
+                particlesMesh.rotation.x = (-mouseY * 0.2);
+
+                camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera); // Simple render, no line checks
+                requestAnimationFrame(animate);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // --- 7. Neon Line FX (Horizontal Taily Lines with Masking) ---
+        function initNeonFx() {
+            const canvas = document.getElementById('menu-fx-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let width, height;
+
+            function resize() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            class NeonLine {
+                constructor() {
+                    this.reset();
+                    this.x = Math.random() * width; // Random start pos
+                }
+                reset() {
+                    this.x = -100 - Math.random() * 500; // Start off-screen left
+                    this.y = Math.random() * height;
+                    this.len = 50 + Math.random() * 200; // Taily length
+                    this.speed = 2 + Math.random() * 6;  // Fast horizontal movement
+                    this.width = 1 + Math.random() * 2;  // Thin lines
+                    // Neon Colors: Cyan, Violet, Hot Pink
+                    const colors = ['#00FFFF', '#5b25d4', '#FF00FF', '#00E5FF'];
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    this.x += this.speed;
+                    if (this.x > width + this.len) {
+                        this.reset();
+                    }
+                }
+                draw() {
+                    ctx.beginPath();
+                    // Gradient for "taily" fade effect
+                    const grad = ctx.createLinearGradient(this.x, this.y, this.x - this.len, this.y);
+                    grad.addColorStop(0, this.color);
+                    grad.addColorStop(1, 'rgba(0,0,0,0)'); // Tail fade
+
+                    ctx.strokeStyle = grad;
+                    ctx.lineWidth = this.width;
+                    ctx.lineCap = 'round';
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x - this.len, this.y);
+                    ctx.shadowBlur = 10; // Blurry glow
+                    ctx.shadowColor = this.color;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0; // Reset for performance
+                }
+            }
+
+            const lines = [];
+            const lineCount = 40; // Bunch of lines
+            for (let i = 0; i < lineCount; i++) lines.push(new NeonLine());
+
+            function animate() {
+                ctx.clearRect(0, 0, width, height);
+                ctx.globalCompositeOperation = 'source-over';
+
+                // 1. Draw all neon lines
+                lines.forEach(line => {
+                    line.update();
+                    line.draw();
+                });
+
+                // 2. MASKING: Exclude areas of boxes
+                // We use 'destination-out' to erase whatever draws next (or drawn before? Actually destination-out removes existing content where new content is drawn)
+                // Wait, 'destination-out' : "The existing content is kept where it does not overlap the new shape." -> New shape erases old.
+                // So we draw the boxes NOW, and they will erase the lines.
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = '#000000'; // Color doesn't matter, alpha does (1.0 = full erase)
+
+                // Mask Menu Items (The 3 options)
+                const menuItems = document.querySelectorAll('.menu-item');
+                // Only if menu overlay is visible/active (opacity > 0)
+                const menuOverlay = document.getElementById('menu-overlay');
+                // Mask if overlay is not hidden
+                if (menuOverlay && getComputedStyle(menuOverlay).opacity > 0.1) {
+                    menuItems.forEach(item => {
+                        const rect = item.getBoundingClientRect();
+                        ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
+                    });
+                }
+
+                // Mask Content Viewer (Articles)
+                const contentViewer = document.getElementById('content-viewer');
+                if (contentViewer && getComputedStyle(contentViewer).opacity > 0.1) {
+                    // Mask the cards inside the grid
+                    const cards = contentViewer.querySelectorAll('.glass-box');
+                    cards.forEach(card => {
+                        const rect = card.getBoundingClientRect();
+                        ctx.fillRect(rect.left, rect.top, rect.width, rect.height);
+                    });
+                    // Also mask the big title area at top? Maybe not, allow lines there? 
+                    // User said "except the article box". Assuming the cards.
+                }
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+
+</html>
