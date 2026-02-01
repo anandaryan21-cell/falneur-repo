@@ -386,9 +386,93 @@
             // SECTION 3: IN MOTION (Current Status)
             'in-motion': [
                 {
-                    title: "Currently Reading",
-                    desc: "The Arcades Project by Walter Benjamin.",
-                    content: "Benjamin's magnum opus on the Paris of the 19th century.",
+                    title: "
+Bharat AI-SoC Student Challenge",
+                    desc: "Real-Time AI at the Edge: Accelerating YOLO on Zynq SoC FPGAs",
+                    content: "The Challenge: Why FPGAs for AI?
+Deep Learning models like YOLO (You Only Look Once) are computationally expensive. While high-end GPUs can handle them, they are power-hungry and often too bulky for "edge" applications like drones or industrial cameras.
+
+In this project, I bridged the gap between high-level AI algorithms and low-level hardware by implementing a custom hardware accelerator on the Xilinx Zynq-7000 SoC. By offloading the "heavy lifting"—the convolutions and poolings—from the ARM CPU to the FPGA's programmable logic, I achieved significant gains in latency and energy efficiency.
+
+Project Architecture & Workflow
+The system is built on a Hardware/Software Co-design philosophy. Instead of running the whole model on the CPU, we treat the FPGA as a powerful "math co-processor."
+
+Step-by-Step Execution Flow:
+Orchestration (PS): The ARM processor (Processing System) initializes the system and loads the model weights and input image into the DDR memory.
+
+DMA Streaming: Using AXI Direct Memory Access (DMA), the image data is "streamed" from the DDR directly into the FPGA logic at high speeds.
+
+Hardware Acceleration (PL): The FPGA logic (Programmable Logic) executes the 16 layers of the YOLO network using custom-designed IP cores:
+
+Convolution Engine: Performs parallel matrix multiplications.
+
+Accumulator: Handles bias addition and Leaky ReLU activations.
+
+Max-Pooling: Reduces spatial dimensions for the next layer.
+
+Result Retrieval: The processed feature maps are sent back to the DDR, where the CPU performs final object localized and Non-Maximum Suppression (NMS).
+
+Deep Dive: The 16-File System Breakdown
+To make this hardware sing, 16 critical files work in harmony. Here is a look "under the hood" at the technical stack.
+
+The Orchestrator & System Logic
+1. yolo_sys.cpp: The brain of the software side. It manages memory, calls the hardware drivers, and calculates the total inference time.
+
+2. xparameters.h: The "map" of the hardware. It contains the memory addresses for every IP core on the FPGA so the software knows where to send commands.
+
+3. xtime_l.h: Provides high-precision timing. I use this to prove that the FPGA version is significantly faster than a software-only implementation.
+
+4. lscript.ld: The linker script. It defines how the massive YOLO feature maps fit into the system's memory regions.
+
+The Hardware Drivers (The Bridge)
+Each hardware IP (Convolution, Pooling, etc.) has a pair of files: a High-Level API (.h) and a Hardware Offset file (_hw.h).
+
+5 & 6. xyolo_conv_top.h / _hw.h: These control the 2D Convolution engine. They allow the CPU to tell the hardware the image size and number of filters.
+
+7 & 8. xyolo_acc_top.h / _hw.h: Drivers for the Accumulation IP. This is where the hardware-based activation functions (like Leaky ReLU) are triggered.
+
+9 & 10. xyolo_max_pool_top.h / _hw.h: These manage the spatial reduction. They are critical for the "downsampling" steps in the YOLO architecture.
+
+11 & 12. xyolo_upsamp_top.h / _hw.h: Used for multi-scale detection. They control hardware logic that scales small feature maps back up to larger sizes.
+
+13 & 14. xyolo_yolo_top.h / _hw.h: The specialized "YOLO-layer" driver that handles the final detection logic and anchor box processing.
+
+System Utilities
+15. xil_printf.h: A lightweight version of printf for embedded systems, used to output real-time status to the serial console without slowing down the system.
+
+16. xil_types.h: Standardizes data types (like u32 and s16). In hardware, precision matters—using short (16-bit) instead of float (32-bit) allows the FPGA to process data much faster.
+
+Results and Key Takeaways
+By moving the convolution and pooling layers into the FPGA logic:
+
+Parallelism: I utilized the FPGA's DSP slices to perform hundreds of multiplications simultaneously.
+
+Quantization: I used 16-bit fixed-point arithmetic, which uses fewer resources than 32-bit floating point with negligible loss in accuracy.
+
+Latency: The hardware acceleration drastically reduced the time-per-frame compared to running the same code on the ARM CPU alone.
+
+Technical Skills Demonstrated:
+Languages: C++, C, LaTeX (Documentation).
+
+Tools: Xilinx Vivado, Vitis HLS, AXI DMA Protocol.
+
+Concepts: CNN Hardware Acceleration, SoC Architecture, Fixed-Point Quantization.",
+                    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop"
+                },
+                {
+                    title: "Next Destination",
+                    desc: "Planning a trip to Kyoto.",
+                    content: "The old capital calls.",
+                    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop"
+                }
+            ]
+        };
+                   'in-motion': [
+                {
+                    title: "
+From Sequential Sluggishness to Systolic Speed: Reimagining the MLP for the Modern Era",
+                    desc: "From Sequential Sluggishness to Systolic Speed: Reimagining the MLP for the Modern Era",
+                    content:vcyhc.",
                     image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop"
                 },
                 {
@@ -1019,3 +1103,4 @@
 </body>
 
 </html>
+
