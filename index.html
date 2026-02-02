@@ -370,10 +370,62 @@
             // SECTION 2: OEUVRE (Projects)
             oeuvre: [
                 {
-                    title: "Project Alpha",
-                    desc: "A study in motion and optics.",
-                    content: "An exploration of light refraction through digital mediums.",
-                    image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+                    title: "FlowPendant: Liquid Light",
+                    desc: "How 200+ LEDs, Charlieplexing, and a 4-Layer PCB created the illusion of flow in a piece of illuminated jewelry.",
+                    content: `
+                        <!-- IMAGE & VIDEO COLLAGE -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-12 rounded-xl overflow-hidden shadow-2xl">
+                            <div class="col-span-2 row-span-2 bg-[#111] flex items-center justify-center relative">
+                                <!-- VIDEO TAG: Change 'path/to/your/video.mp4' to your actual file path (e.g., 'C:/Users/aryan/Desktop/pendant_video.mp4') -->
+                                <video 
+                                    src="C:/Users/aryan/Videos/Screen Recordings/Screen Recording 2026-02-02 140725.mp4" 
+                                    class="w-full h-full object-cover" 
+                                    autoplay loop muted playsinline>
+                                </video>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                            </div>
+                            <div class="col-span-1">
+                                <img src="C:/Users/aryan/.gemini/antigravity/brain/d422f614-c084-41ca-b906-ab721fdc73d8/uploaded_media_0_1770020997471.png" alt="PCB Layout 1" class="w-full h-full object-cover">
+                            </div>
+                            <div class="col-span-1">
+                                <img src="C:/Users/aryan/.gemini/antigravity/brain/d422f614-c084-41ca-b906-ab721fdc73d8/uploaded_media_1_1770020997471.png" alt="PCB Rendering 1" class="w-full h-full object-cover">
+                            </div>
+                            <div class="col-span-1">
+                                <img src="C:/Users/aryan/.gemini/antigravity/brain/d422f614-c084-41ca-b906-ab721fdc73d8/uploaded_media_2_1770020997471.png" alt="PCB Layout 2" class="w-full h-full object-cover">
+                            </div>
+                            <div class="col-span-1">
+                                <img src="C:/Users/aryan/.gemini/antigravity/brain/d422f614-c084-41ca-b906-ab721fdc73d8/uploaded_media_3_1770020997471.png" alt="PCB Rendering 2" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+
+                        <p class="text-xl font-light leading-relaxed mb-8 italic">At first glance, FlowPendant looks like a piece of illuminated jewelry—smooth, fluid, almost alive. The light seems to move the way liquid does, bending and flowing naturally inside a compact pendant.</p>
+                        
+                        <p class="mb-8">But beneath that calm, organic motion lies an aggressively engineered system: a 4-layer PCB, over 200 LEDs, and a carefully tuned Charlieplexing architecture designed to push the limits of what wearable electronics can do. This project was not about adding more components. It was about making complexity disappear.</p>
+
+                        <h3 class="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-2">The Vision Behind the Pendant</h3>
+                        <p class="mb-6">The idea began with a simple question: <i>Can fluid motion be simulated using only light, without screens, motors, or actual liquid?</i></p>
+                        <p class="mb-8">The answer led to an unusual design direction. Instead of treating LEDs as indicators, they were treated as particles—each one contributing to a larger motion pattern. The pendant itself became a canvas, and the PCB became the medium through which motion was painted. To preserve the illusion, the electronics had to remain invisible. That single requirement dictated almost every design decision that followed.</p>
+
+                        <h3 class="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-2">Why a 4-Layer PCB Was the Only Real Option</h3>
+                        <p class="mb-6">With more than 200 LEDs packed into a small wearable form factor, a traditional 2-layer PCB would have turned into an exposed mess of traces and compromises. The solution was a 4-layer stack-up, where each layer had a very specific role:</p>
+                        <ul class="list-disc pl-6 mb-8 space-y-4">
+                            <li><b>The Top Layer:</b> Dedicated entirely to LEDs. No distracting traces, no visual clutter—just a dense, carefully spaced LED field.</li>
+                            <li><b>First Internal Layer:</b> The nerve system. This is where the Charlieplexing network lives—hundreds of interconnections quietly weaving through the board.</li>
+                            <li><b>Second Internal Layer:</b> Reserved for power and return paths. Voltage dips translate directly into uneven brightness, so this layer keeps the system stable.</li>
+                            <li><b>The Bottom Layer:</b> The intelligence. The MCU, control circuitry, and power regulation were all placed here, completely hidden from view.</li>
+                        </ul>
+
+                        <h3 class="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-2">Charlieplexing: Elegant, Efficient, and Unforgiving</h3>
+                        <p class="mb-6">Driving more than 200 LEDs individually would normally require an absurd number of pins. Charlieplexing allows a small number of MCU pins to control a large number of LEDs by exploiting directionality and tri-state logic.</p>
+                        <p class="mb-8">In theory, Charlieplexing is beautiful. In practice, it is ruthless. Every LED must be mapped precisely between two pins with a specific polarity. Any routing error doesn’t just fail one LED—it creates ghost paths that light up LEDs that were never meant to turn on.</p>
+
+                        <h3 class="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-2">Creating Fluid Motion Without Fluid</h3>
+                        <p class="mb-8">The sense of flow is entirely an illusion created by carefully choreographed light. This required thinking beyond simple on-off animations. Brightness had to rise and decay gradually. Motion had to feel continuous, not stepped. The result is a system where light behaves less like electronics and more like physics.</p>
+
+                        <h3 class="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-2">Electronics That Behave Like Jewelry</h3>
+                        <p class="mb-8">A pendant is worn, not mounted. That changes everything. Heat dissipation, weight balance, visual symmetry, and comfort suddenly matter as much as clock speed and pin count. FlowPendant is proof that a PCB doesn’t have to hide behind plastic. It can be expressive. It can tell a story. It can simulate something as complex and organic as fluid motion—using nothing but copper, silicon, and light.</p>
+                    `,
+                    image: "C:/Users/aryan/.gemini/antigravity/brain/d422f614-c084-41ca-b906-ab721fdc73d8/uploaded_media_4_1770020997471.png"
                 },
                 {
                     title: "Neon Dreams",
@@ -386,100 +438,16 @@
             // SECTION 3: IN MOTION (Current Status)
             'in-motion': [
                 {
-                    title: "
-Bharat AI-SoC Student Challenge",
-                    desc: "Real-Time AI at the Edge: Accelerating YOLO on Zynq SoC FPGAs",
-                    content: "The Challenge: Why FPGAs for AI?
-Deep Learning models like YOLO (You Only Look Once) are computationally expensive. While high-end GPUs can handle them, they are power-hungry and often too bulky for "edge" applications like drones or industrial cameras.
-
-In this project, I bridged the gap between high-level AI algorithms and low-level hardware by implementing a custom hardware accelerator on the Xilinx Zynq-7000 SoC. By offloading the "heavy lifting"—the convolutions and poolings—from the ARM CPU to the FPGA's programmable logic, I achieved significant gains in latency and energy efficiency.
-
-Project Architecture & Workflow
-The system is built on a Hardware/Software Co-design philosophy. Instead of running the whole model on the CPU, we treat the FPGA as a powerful "math co-processor."
-
-Step-by-Step Execution Flow:
-Orchestration (PS): The ARM processor (Processing System) initializes the system and loads the model weights and input image into the DDR memory.
-
-DMA Streaming: Using AXI Direct Memory Access (DMA), the image data is "streamed" from the DDR directly into the FPGA logic at high speeds.
-
-Hardware Acceleration (PL): The FPGA logic (Programmable Logic) executes the 16 layers of the YOLO network using custom-designed IP cores:
-
-Convolution Engine: Performs parallel matrix multiplications.
-
-Accumulator: Handles bias addition and Leaky ReLU activations.
-
-Max-Pooling: Reduces spatial dimensions for the next layer.
-
-Result Retrieval: The processed feature maps are sent back to the DDR, where the CPU performs final object localized and Non-Maximum Suppression (NMS).
-
-Deep Dive: The 16-File System Breakdown
-To make this hardware sing, 16 critical files work in harmony. Here is a look "under the hood" at the technical stack.
-
-The Orchestrator & System Logic
-1. yolo_sys.cpp: The brain of the software side. It manages memory, calls the hardware drivers, and calculates the total inference time.
-
-2. xparameters.h: The "map" of the hardware. It contains the memory addresses for every IP core on the FPGA so the software knows where to send commands.
-
-3. xtime_l.h: Provides high-precision timing. I use this to prove that the FPGA version is significantly faster than a software-only implementation.
-
-4. lscript.ld: The linker script. It defines how the massive YOLO feature maps fit into the system's memory regions.
-
-The Hardware Drivers (The Bridge)
-Each hardware IP (Convolution, Pooling, etc.) has a pair of files: a High-Level API (.h) and a Hardware Offset file (_hw.h).
-
-5 & 6. xyolo_conv_top.h / _hw.h: These control the 2D Convolution engine. They allow the CPU to tell the hardware the image size and number of filters.
-
-7 & 8. xyolo_acc_top.h / _hw.h: Drivers for the Accumulation IP. This is where the hardware-based activation functions (like Leaky ReLU) are triggered.
-
-9 & 10. xyolo_max_pool_top.h / _hw.h: These manage the spatial reduction. They are critical for the "downsampling" steps in the YOLO architecture.
-
-11 & 12. xyolo_upsamp_top.h / _hw.h: Used for multi-scale detection. They control hardware logic that scales small feature maps back up to larger sizes.
-
-13 & 14. xyolo_yolo_top.h / _hw.h: The specialized "YOLO-layer" driver that handles the final detection logic and anchor box processing.
-
-System Utilities
-15. xil_printf.h: A lightweight version of printf for embedded systems, used to output real-time status to the serial console without slowing down the system.
-
-16. xil_types.h: Standardizes data types (like u32 and s16). In hardware, precision matters—using short (16-bit) instead of float (32-bit) allows the FPGA to process data much faster.
-
-Results and Key Takeaways
-By moving the convolution and pooling layers into the FPGA logic:
-
-Parallelism: I utilized the FPGA's DSP slices to perform hundreds of multiplications simultaneously.
-
-Quantization: I used 16-bit fixed-point arithmetic, which uses fewer resources than 32-bit floating point with negligible loss in accuracy.
-
-Latency: The hardware acceleration drastically reduced the time-per-frame compared to running the same code on the ARM CPU alone.
-
-Technical Skills Demonstrated:
-Languages: C++, C, LaTeX (Documentation).
-
-Tools: Xilinx Vivado, Vitis HLS, AXI DMA Protocol.
-
-Concepts: CNN Hardware Acceleration, SoC Architecture, Fixed-Point Quantization.",
-                    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop"
+                    title: "Systolic Array: The Hardware Brain",
+                    desc: "Rebuilding the traditional MLP from the chassis up into a high-performance weight-stationary architecture.",
+                    content: "In the world of hardware acceleration, the traditional Multi-Layer Perceptron (MLP) is often treated like an old sedan—reliable, but not built for the racetrack. For my latest project, I’m taking that \"sedan,\" stripping it to the chassis, and rebuilding it into a high-performance Systolic Array.<br><br>The heart of this project isn't just about getting a higher accuracy; it’s about computational elegance. We are moving away from the bottleneck of fetching weights from memory every clock cycle and moving toward a \"Weight-Stationary\" architecture where data flows through the silicon like blood through a rhythmic, beating heart.<br><br><b>🧠 The Core Concept: Why the Change?</b><br>Traditional MLPs spend most of their time and energy moving data back and forth between the processor and memory. This is the \"Von Neumann Bottleneck.\"<br><br>My new design uses a Systolic Array of Processing Elements (PEs):<br><ul><li><b>The \"Heart-Beat\" Logic:</b> In a systolic array, data flows through a grid of PEs in a rhythmic fashion. Each PE performs a small part of the math and passes the result to its neighbor.</li><li><b>Spatial Processing:</b> Instead of one big ALU doing all the work, I’ve distributed the intelligence across an 8x8 grid.</li><li><b>Efficiency:</b> By keeping weights stationary inside the PEs, we drastically reduce the power-hungry \"memory-fetch\" operations.</li></ul><br><b>🛠️ The Blueprint: How I’m Building It</b><br>My project follows a rigorous, bottom-up hardware design methodology:<br><ol><li><b>The Atomic Unit: The Processing Element (PE)</b><br>The project begins with the design of a standalone Unit PE. This is a purely combinational MAC (Multiply-Accumulate) block. It is designed to be \"tileable,\" meaning it has ports to receive pixels from the left and pass them right, while simultaneously receiving partial sums from the top and passing them down.</li><li><b>The Grid Architecture (The Hardware Brain)</b><br>I am wiring these PEs into an 8x8 Combinational Grid. To keep it \"raw\" and fast, I am bypasssing complex state machines and using direct hardware wires. This allows the pixel intensities of my arithmetic symbol images (+, -, ×, ÷) to propagate through the weights instantly.</li><li><b>Classification via Template Matching</b><br>Instead of deep, multi-layer complexity, I’m utilizing Linear Discrimination. Each column in my array is hard-coded with a \"template\" for a specific symbol. The neuron that outputs the highest electrical sum \"wins,\" identifying the symbol in a single pass.</li></ol><br><b>⚡ The Power Play: Comparison using Cadence</b><br>The real proof of this architecture isn't in the code; it's in the physics. To prove that the Systolic Array is superior to the old MLP, I am using the Cadence Tool Suite for a deep-dive analysis:<br><ul><li><b>Logic Synthesis (Cadence Genus):</b> I will convert my Verilog into a gate-level netlist. This tells me exactly how many transistors and \"area\" my new design takes compared to the old one.</li><li><b>Power Analysis (Cadence Joules):</b> This is the most critical step. I will compare the Total Power Consumption. Because the systolic array minimizes data movement, I expect to see a significant drop in \"switching activity\" power.</li><li><b>Physical Implementation (Cadence Innovus):</b> I’ll take it all the way to a \"place-and-route\" layout.</li></ul><br><b>📈 Final Goals: The Verdict</b><br>By the end of this project, I will have a side-by-side comparison chart showing:<br><ul><li><b>Latency:</b> How much faster the Combinational Systolic Array classifies a symbol vs. a sequential MLP.</li><li><b>Power (mW):</b> The exact energy savings per classification.</li><li><b>Area Efficiency:</b> How many micrometers of silicon we saved or used.</li></ul><br>This project proves that sometimes, to move forward, you have to rethink the very pulse of how data moves through a chip.",
+                    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop"
                 },
                 {
-                    title: "Next Destination",
-                    desc: "Planning a trip to Kyoto.",
-                    content: "The old capital calls.",
-                    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop"
-                }
-            ]
-        };
-                   'in-motion': [
-                {
-                    title: "
-From Sequential Sluggishness to Systolic Speed: Reimagining the MLP for the Modern Era",
-                    desc: "From Sequential Sluggishness to Systolic Speed: Reimagining the MLP for the Modern Era",
-                    content:vcyhc.",
-                    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974&auto=format&fit=crop"
-                },
-                {
-                    title: "Next Destination",
-                    desc: "Planning a trip to Kyoto.",
-                    content: "The old capital calls.",
-                    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop"
+                    title: "Edge AI: Cloud to Core",
+                    desc: "Shattering the latency barrier using Zynq SoC hardware-software co-design.",
+                    content: "In an era where every millisecond counts—from autonomous drones navigating tight spaces to industrial robots detecting defects on a high-speed assembly line—the \"Cloud\" is often too far away. Moving AI from massive data centers to local hardware (the Edge) is the holy grail of modern engineering.<br><br>This project isn't just about running an AI model; it’s about rethinking the hardware it runs on.<br><br><b>The Problem: The \"CPU Bottleneck\"</b><br>Most AI models, specifically YOLO (You Only Look Once), are math monsters. They require billions of multiplications and additions to identify a single object in a frame.<br><br><ul><li><b>The Struggle:</b> Traditional mobile processors (CPUs) handle tasks one by one (sequentially). When they hit a heavy AI workload, they overheat, consume massive amounts of battery, and the \"real-time\" video feed turns into a slow-motion slideshow.</li><li><b>The Dependency:</b> Many \"Edge\" devices currently cheat by sending data to the cloud for processing, introducing dangerous delays (latency) and privacy risks.</li></ul><br><b>The Solution: Hardware-Software Co-Design</b><br>To solve this, I utilized a Xilinx Zynq-7000 SoC—a unique chip that combines the brain of an ARM Processor with the raw, customizable power of an FPGA (Field Programmable Gate Array).<br><br>Instead of asking the CPU to do the math, I built a custom \"digital circuit\" inside the FPGA specifically designed to do one thing: <b>Accelerate Neural Networks.</b><br><br><b>How it Works:</b><br><ol><li><b>Divide and Conquer:</b> I partitioned the project. The ARM CPU handles the \"logic\" (loading images, organizing data), while the FPGA fabric handles the \"brute force\" (the Convolutional layers).</li><li><b>Custom Pipelines:</b> I designed specialized hardware blocks for Convolution, Max-Pooling, and Accumulation. These blocks work in parallel, meaning the FPGA can do hundreds of calculations at the exact same time a CPU would be doing one.</li><li><b>Data Streaming:</b> Using AXI-DMA (Direct Memory Access), I created a high-speed \"highway\" for data to move between the memory and the FPGA without the CPU having to micro-manage every byte.</li></ol><br><b>The Outcome: Intelligence at the Speed of Light</b><br>By shifting the workload from software-only to a custom hardware-accelerated pipeline, the results were transformative:<br><br><ul><li><b>Real-Time Performance:</b> We achieved significantly higher frames-per-second (FPS), making the system truly \"real-time\" for the first time.</li><li><b>Extreme Efficiency:</b> Because the FPGA is \"wired\" for this specific math, it finishes the task much faster and with a fraction of the power consumption of a standard processor.</li><li><b>Total Autonomy:</b> The device no longer needs Wi-Fi or Cloud access to \"think.\" It is a self-contained, intelligent unit capable of making split-second decisions locally.</li></ul><br><b>The Impact</b><br>This project proves that the future of AI isn't just better code—it’s better silicon. By mastering the bridge between software and hardware, we can put high-performance sight and intelligence into the palm of a hand, the wing of a drone, or the lens of a security camera.",
+                    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop"
                 }
             ]
         };
@@ -561,6 +529,13 @@ From Sequential Sluggishness to Systolic Speed: Reimagining the MLP for the Mode
             readTitle.innerText = item.title;
             // Use user content if provided, else dummy text
             readContent.innerHTML = item.content || `(Content would go here for ${item.title}...) <br><br> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`;
+
+            // FORCE PLAY VIDEOS (Ensures loop starts immediately)
+            const videos = readContent.querySelectorAll('video');
+            videos.forEach(v => {
+                v.play().catch(e => console.log("Autoplay blocked:", e));
+            });
+
             readCat.innerText = currentCategory;
 
             if (item.image) {
@@ -1103,4 +1078,3 @@ From Sequential Sluggishness to Systolic Speed: Reimagining the MLP for the Mode
 </body>
 
 </html>
-
